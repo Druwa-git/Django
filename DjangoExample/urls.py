@@ -16,12 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
-from post import views
 
 urlpatterns = [
-    path('post/', views.PostListAPIView.as_view()),
-    path('post/<pk>/', views.PostDetailAPIView.as_view()),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # path('api-token-auth/', views.CustomAuthToken.as_view()),
     path('admin/', admin.site.urls),
+    path('', include('post.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
