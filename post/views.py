@@ -3,8 +3,8 @@ from django.shortcuts import render, get_object_or_404
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Post
-from .serializers import PostSerializer
+from .models import Post, Comment
+from .serializers import PostSerializer, CommentSerializer
 
 # Authentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -50,6 +50,27 @@ class PostDetailAPIView(APIView):
         post = self.get_object(pk)
         post.delete()
         return Response(status=200)
+
+
+class CommentListAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        return get_object_or_404(Post, pk=pk)
+
+    def get(self, request, pk, fomat=None):
+        post = self.get_object(pk)
+        serializer = CommentSerializer(post.comments.all(), many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
 """
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
