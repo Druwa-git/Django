@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Django Post</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="posting">
+
+    </div>
+    <script type="text/javascript">
+        new Vue({
+            el: '#posting',
+            delimiters: ['${', '}'],
+            data: {
+                posts: [],
+                loading: true,
+                detailpost: {},
+                // message: null,
+            },
+            mounted: function () {
+                this.getPosts();
+            },
+            methods: {
+                getPosts: function () {
+                    this.loading = true;
+                    axios.get('/post/api')
+                        .then((response) => {
+                            this.posts = response.data;
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err)
+                        })
+                },
+                getPost: function (pk) {
+                    this.loading = true;
+                    axios.get('/post/api/' + pk + '/')
+                        .then((response) => {
+                            this.detailpost = response.data;
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                }
+            },
+        })
+    </script>
+</body>

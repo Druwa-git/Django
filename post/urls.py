@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('', views.PostListAPIView.as_view()),
-    path('<pk>/', views.PostDetailAPIView.as_view()),
-    path('<pk>/comments', views.CommentListAPIView.as_view()),
+    path('api/', views.PostListAPIView.as_view()),
+    path('api/<uuid:pk>/', views.PostDetailAPIView.as_view()),
+    path('api/<uuid:pk>/comments', views.CommentListAPIView.as_view()),
+    path('', TemplateView.as_view(template_name='post/index.html'),name='list'),
 ]

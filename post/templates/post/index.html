@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Django Post</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="posting">
+        <div class="container">
+            <h1>Post List</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">title</th>
+                        <th scope="col">content</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="post in posts">
+                        <th scope="row">${post.uid}</th>
+                        <td>${post.title}</td>
+                        <td>
+                            <!--<a href="http://127.0.0.1:8000/post/" +${post.uid}>
+                                See Detail
+                            </a>
+                            <button class="btn btn-info" v-on:click="getPost(post.uid)">GET</button>-->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    <script type="text/javascript">
+        new Vue({
+            el: '#posting',
+            delimiters: ['${', '}'],
+            data: {
+                posts: [],
+                loading: true,
+                detailpost: {},
+                // message: null,
+            },
+            mounted: function () {
+                this.getPosts();
+            },
+            methods: {
+                getPosts: function () {
+                    this.loading = true;
+                    axios.get('/post/api')
+                        .then((response) => {
+                            this.posts = response.data;
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err)
+                        })
+                }
+                /*getPost: function (pk) {
+                    this.loading = true;
+                    axios.get('/post/api/'+pk+'/')
+                        .then((response) => {
+                            this.detailpost = response.data;
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                }*/
+            },
+        })
+    </script>
+</body>
+</html>
