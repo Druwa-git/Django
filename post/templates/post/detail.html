@@ -8,39 +8,33 @@
 </head>
 <body>
     <div id="posting">
-
+        <div class="container">
+            <h1>Post Detail</h1>
+            <table class="table">
+                <tr>
+                    ${post.uid}
+                </tr>
+            </table>
+        </div>
     </div>
     <script type="text/javascript">
         new Vue({
             el: '#posting',
             delimiters: ['${', '}'],
             data: {
-                posts: [],
+                post: {},
                 loading: true,
-                detailpost: {},
                 // message: null,
             },
             mounted: function () {
-                this.getPosts();
+                this.getPost(uid);
             },
             methods: {
-                getPosts: function () {
-                    this.loading = true;
-                    axios.get('/post/api')
-                        .then((response) => {
-                            this.posts = response.data;
-                            this.loading = false;
-                        })
-                        .catch((err) => {
-                            this.loading = false;
-                            console.log(err)
-                        })
-                },
                 getPost: function (pk) {
                     this.loading = true;
                     axios.get('/post/api/' + pk + '/')
                         .then((response) => {
-                            this.detailpost = response.data;
+                            this.post = response.data;
                             this.loading = false;
                         })
                         .catch((err) => {

@@ -7,4 +7,5 @@ urlpatterns = [
     path('api/<uuid:pk>/', views.PostDetailAPIView.as_view()),
     path('api/<uuid:pk>/comments', views.CommentListAPIView.as_view()),
     path('', TemplateView.as_view(template_name='post/index.html'),name='list'),
+    path('detail/', TemplateView.as_view(template_name='post/detail.html'),name='detail'),
 ]
