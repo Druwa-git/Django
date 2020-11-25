@@ -34,7 +34,7 @@
                     <td>${post.edited_at}</td>
                 </tr>
             </table>
-            <h2>CONTENT</h2>
+            <h3>CONTENT</h3>
             <div style="border : 3px solid black; padding: 50px;">${post.content}</div>
             <br>
             <a :html="'/post/'">Go to post list page</a>
@@ -47,19 +47,23 @@
     <br />
     <div id="comments">
         <div class="container">
-            <h2>COMMENT</h2>
-            <table class="table">
-                <tr v-for="comment in comments">
-                    <div class="comment_header">
-                        <div class="comment_author"><td>${comment.author}</td></div>
-                        <div class="comment_date"><td>${comment.created_at}</td></div>
-                    </div>
-                    <br />
-                    <div class="comment_body">
-                        <td>${comment.content}</td>
-                    </div>
-                </tr>
-            </table>
+            <h3>COMMENT</h3>
+            <div v-for="comment in comments">
+                <div class="comment_header">
+                    <div class="comment_author"><b>${comment.author}</b></div>
+                    <div class="comment_date" style="text-align: right">${comment.created_at}</div>
+                </div>
+                <div style="border : 2px solid black; padding: 10px;">
+                    ${comment.content}
+                </div>
+                <br />
+            </div>
+            <br />
+            <br />
+            <form v-on:submit.prevent="postComment(id)" id="inform">
+                <p><textarea name="write_comment" form="inform" cols="100" rows="5"></textarea></p>
+                <input type="submit" />
+            </form>
         </div>
     </div>
     <script type="text/javascript">
@@ -110,9 +114,10 @@
             data: {
                 comments: [],
                 loading: true,
+                id: getParameters('uid'),
             },
             mounted: function () {
-                this.getComments(getParameters('uid'));
+                this.getComments(this.id);
             },
             methods: {
                 getComments: function (pk) {
@@ -124,6 +129,18 @@
                         })
                         .catch((err) => {
                             this.loading = false;
+                            console.log(err);
+                        })
+                },
+                postComment: function (pk) {
+                    this.loading = true;
+                    axios.post('/post/api/' + pk + '/comments/')
+                        .then((response) => {
+                            this.loading = true;
+                            this.getComments(pk);
+                        })
+                        .catch((err) => {
+                            this.loading = true;
                             console.log(err);
                         })
                 }
