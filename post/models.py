@@ -7,6 +7,13 @@ from django.db import models
 
 
 class Post(models.Model):
+    def created_author(self):
+        return self.author.first_name;
+
+    def created_time(self):
+        time = self.created_at;
+        return time.year + "년" + time.month + "월" + time.day + "일" + time.hour + "시" + time.minute + "분";
+
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     title = models.CharField(max_length=100)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='authors')

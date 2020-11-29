@@ -24,7 +24,10 @@
                         <th scope="row">${post.uid}</th>
                         <td>${post.title}</td>
                         <td>
-                            <a :href="'/post/detail/?uid='+post.uid">See Detail</a>
+                            <a :href="'/post/detail/?uid='+post.uid">
+                                {% csrf_token %}
+                                See Detail
+                            </a>
                         </td>
                     </tr>
                 </tbody>
