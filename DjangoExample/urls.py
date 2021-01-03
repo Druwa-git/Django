@@ -22,3 +22,4 @@ urlpatterns = [
     path('post/', include('post.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
+#나중에 static file url 집어 넣기

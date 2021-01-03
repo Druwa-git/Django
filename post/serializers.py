@@ -3,13 +3,17 @@ from .models import Post, Comment
 #from django.contrib.auth.models import User
 
 class PostSerializer(serializers.ModelSerializer):
+	author = serializers.CharField()
+	created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+	edited_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 	class Meta:
 		model = Post
-		#author = author.get_full_name()
 		fields = ('uid','title','author','content','created_at','edited_at')
 
 
 class CommentSerializer(serializers.ModelSerializer):
+	author = serializers.CharField()
+	created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 	class Meta:
 		model = Comment
-		fields = ('post', 'author', 'content', 'created_at')
+		fields = ('id', 'post', 'author', 'content', 'created_at')

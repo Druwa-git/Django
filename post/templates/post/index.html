@@ -10,7 +10,10 @@
 <body>
     <div id="posting">
         <div class="container">
-            <h1>Post List</h1>
+          <table>
+            <th><h1>Post List</h1></th>
+            <th><a :href="'/post/posting'">새 글 쓰기</a></th>
+          </table>
             <table class="table">
                 <thead>
                     <tr>
@@ -58,8 +61,8 @@
                             this.loading = false;
                             console.log(err)
                         })
-                }
-            },
+               }
+             }
         })
     </script>
 </body>

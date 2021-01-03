@@ -24,11 +24,11 @@ class PostListAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        data = request.data;
+        post = Post.objects.create(title=data['title'], content=data['content'], author=request.user)
         serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        serializer.is_valid()
+        return Response(serializer.data, status=201)
 
 class PostDetailAPIView(APIView):
     def get_object(self, pk):
@@ -66,11 +66,39 @@ class CommentListAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
+        post = self.get_object(pk)
+        data = request.data
+        post = Comment.objects.create(post=post, content=data['content'], author=request.user)
         serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        #serializer.is_valid(raise_exception=True) This occur error 400 why?
+        serializer.is_valid()
+        #serializer.save() //accur 500 error
+        return Response(serializer.data, status=201)
+
+class CommentDetailAPIView(APIView):
+    def get_comment(self, pk):
+        return get_object_or_404(Comment, pk=pk)
+
+    def get_object(self, post_pk):
+        return get_object_or_404(Post, pk=post_pk)
+
+    def get(self, request, pk, post_pk, format=None):
+        comment = self.get_comment(pk)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    def put(self, request, pk, post_pk):
+        post = self.get_object(post_pk)
+        data = request.data
+        Comment.objects.create(post=post, content=data['content'], author=request.user)
+        serializer = CommentSerializer(data=request.data)
+        serializer.is_valid()
+        return Response(serializer.data, status=201)
+
+    def delete(self, request, pk):
+        comment = self.get_comment(pk)
+        comment.delete()
+        return Response(status=200)
 
 """
 class CustomAuthToken(ObtainAuthToken):

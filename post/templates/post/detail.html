@@ -13,6 +13,7 @@
     <div id="posting">
         <div class="container">
             <h1>Post Detail</h1>
+            <button v-on:click="deletePost(id)">Remove Post</button>
             <table class="table">
                 <tr>
                     <td>uid</td>
@@ -24,7 +25,7 @@
                 </tr>
                 <tr>
                     <td>author</td>
-                    <td>${post.created_author}</td>
+                    <td>${post.author}</td>
                 </tr>
                 <tr>
                     <td>만든 날짜</td>
@@ -37,8 +38,6 @@
             </table>
             <h3>CONTENT</h3>
             <div style="border : 3px solid black; padding: 50px;">${post.content}</div>
-            <br>
-            <a :html="'/post/'">Go to post list page</a>
             <br>
             <a href="javascript:history.back()">Go to post list page</a>
         </div>
@@ -63,82 +62,22 @@
             <br />
             <form v-on:submit.prevent="postComment(id)" id="inform">
                 {% csrf_token %}
-                <p><textarea name="write_comment" form="inform" cols="100" rows="5"></textarea></p>
-                <input type="submit" />
+                <p><textarea id="comment_content" placeholder="댓글 달기" cols="100" rows="5"></textarea></p>
+                <input type="submit" value="Submit" onclick="getCommentContent()">
             </form>
         </div>
     </div>
+    <script type="text/javascript" src="/static/js/getparam.js"></script>
+    <script type="text/javascript" src="/static/js/csrftoken.js"></script>
+    <script type="text/javascript" src="/static/js/posting.js"></script>
     <script type="text/javascript">
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+        //var myForm = document.getElementById('inform');
+        //formData = new FormData(myForm);
+        var payload;
+        var getCommentContent = function () {
+          var comment_content = document.getElementById('comment_content').value;
+          payload = {"content":comment_content};
         }
-
-        var csrftoken = getCookie('csrftoken');
-
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-        $.ajaxSetup({
-            beforeSend: function (xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-        });
-
-        var getParameters = function (paramName) {
-            var returnValue;
-            var url = location.href;
-            var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
-
-            for (var i = 0; i < parameters.length; i++) {
-                var varName = parameters[i].split('=')[0];
-                if (varName.toUpperCase() == paramName.toUpperCase()) {
-                    returnValue = parameters[i].split('=')[1];
-                    return decodeURIComponent(returnValue);
-                }
-            }
-        };
-
-        const posting = new Vue({
-            el: '#posting',
-            delimiters: ['${', '}'],
-            data: {
-                post: {},
-                loading: true,
-                // message: null,
-            },
-            mounted: function () {
-                this.getPost(getParameters('uid'));
-            },
-            methods: {
-                getPost: function (pk) {
-                    this.loading = true;
-                    axios.get('/post/api/' + pk + '/')
-                        .then((response) => {
-                            this.post = response.data;
-                            this.loading = false;
-                        })
-                        .catch((err) => {
-                            this.loading = false;
-                            console.log(err);
-                        })
-                }
-            },
-        })
 
         const comments = new Vue({
             el: '#comments',
@@ -147,6 +86,7 @@
                 comments: [],
                 loading: true,
                 id: getParameters('uid'),
+                content: comment_content,
             },
             mounted: function () {
                 this.getComments(this.id);
@@ -166,7 +106,7 @@
                 },
                 postComment: function (pk) {
                     this.loading = true;
-                    axios.post('/post/api/' + pk + '/comments/')
+                    axios.post('/post/api/' + pk + '/comments/', payload, headers = { "X-CSRFToken": csrftoken })
                         .then((response) => {
                             this.loading = true;
                             this.getComments(pk);
@@ -175,15 +115,9 @@
                             this.loading = true;
                             console.log(err);
                         })
-                }
+                },
             }
         })
-                /* const router = new VueRouter({
-                routes: [
-                    { path: '/post/detail/:uid', component: posting, props: true }
-                ]
-            }) */
-
     </script>
 </body>
 </html>
